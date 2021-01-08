@@ -109,9 +109,7 @@ def resume_game():
     if (check_host(plugin.get_setting('host', str)) == True):
         if plugin.get_setting('last_run', str):
             lastrun = plugin.get_setting('last_run', str)
-            confirmed = xbmcgui.Dialog().yesno('', 'Resume playing ' + lastrun + '?', nolabel='No', yeslabel='Yes', autoclose=5000)
-            if confirmed:
-                start_running_game()
+            start_running_game()
         else:
             xbmcgui.Dialog().ok('', 'Game not running! Nothing to do...')
     else:
@@ -166,22 +164,20 @@ def quit_game(refresh):
     if (check_host(plugin.get_setting('host', str)) == True):
         if plugin.get_setting('last_run', str):
             lastrun = plugin.get_setting('last_run', str)
-            confirmed = xbmcgui.Dialog().yesno('', 'Confirm to quit ' + lastrun + '?', nolabel='No', yeslabel='Yes', autoclose=5000)
-            if confirmed:
-                subprocess.Popen(["moonlight", "quit"], cwd="/storage/moonlight", env={'LD_LIBRARY_PATH': '/storage/moonlight'}, shell=False, preexec_fn=os.setsid)
-                plugin.set_setting('last_run', None)
-                if refresh != 'Switch':
-                    xbmcgui.Dialog().ok('', lastrun + ' successfully closed!')
-                else:
-                    time.sleep(3)
-                main = "pkill -x moonlight"
-                print(os.system(main))
-                
-                if refresh == 'True':
-                    do_full_refresh()
-                    return 'True'
-                if refresh == 'Switch':
-                	return 'True'
+            subprocess.Popen(["moonlight", "quit"], cwd="/storage/moonlight", env={'LD_LIBRARY_PATH': '/storage/moonlight'}, shell=False, preexec_fn=os.setsid)
+            plugin.set_setting('last_run', None)
+            if refresh != 'Switch':
+                xbmcgui.Dialog().ok('', lastrun + ' successfully closed!')
+            else:
+                time.sleep(3)
+            main = "pkill -x moonlight"
+            print(os.system(main))
+
+            if refresh == 'True':
+                do_full_refresh()
+                return 'True'
+            if refresh == 'Switch':
+                return 'True'
         else:
             xbmcgui.Dialog().ok('', 'Game not running! Nothing to do...')
     else:
@@ -297,7 +293,7 @@ def show_games():
     if (check_host(plugin.get_setting('host', str)) == True):
         if os.path.isfile("/storage/.cache/moonlight/client.p12"):
             game_controller = RequiredFeature('game-controller').request()
-            plugin.set_content('movies')
+            #plugin.set_content('movies')
             return plugin.finish(game_controller.get_games_as_list(), sort_methods=['label'])
         else:
             xbmcgui.Dialog().ok('Pair key not found!', 'Please pair with the host before proceeding...')
@@ -385,7 +381,7 @@ def launch_game_from_widget(xml_id):
 
 if __name__ == '__main__':
     core = RequiredFeature('core').request()
-    update_storage = plugin.get_storage('update', TTL=24*60)
+    update_storage = plugin.get_storage('update', TTL=240*60)
     if not update_storage.get('checked'):
         updater = RequiredFeature('update-service').request()
         updater.check_for_update()
